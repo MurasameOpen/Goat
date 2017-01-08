@@ -47,7 +47,11 @@ public class PlayerControl : MonoBehaviour
 	private float distToGround;
 	private float sprintFactor;
 
-	void Awake()
+    // CoinScore
+    public GameObject scoreText;
+    ScoreTextScript scoreS;
+
+    void Awake()
 	{
 		anim = GetComponent<Animator> ();
 		cameraTransform = Camera.main.transform;
@@ -62,7 +66,10 @@ public class PlayerControl : MonoBehaviour
 		groundedBool = Animator.StringToHash("Grounded");
 		distToGround = GetComponent<Collider>().bounds.extents.y;
 		sprintFactor = sprintSpeed / runSpeed;
-	}
+
+        // CoinScore
+        scoreS = scoreText.GetComponent<ScoreTextScript>();
+    }
 
 	bool IsGrounded() {
 		return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
@@ -226,4 +233,14 @@ public class PlayerControl : MonoBehaviour
 	{
 		return sprint && !aim && (isMoving);
 	}
+
+    void OnCollisionEnter(Collision colObject)
+    {
+        if (colObject.gameObject.tag == "Coin")
+        {
+            Destroy(colObject.gameObject);
+            scoreS.AddScore();
+        }
+    }
+
 }
