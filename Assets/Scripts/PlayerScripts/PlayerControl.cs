@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -51,6 +52,10 @@ public class PlayerControl : MonoBehaviour
     public GameObject scoreText;
     ScoreTextScript scoreS;
 
+	// Gameover
+    public GameObject GameoverText;
+    private bool IsGameover = false;
+
     void Awake()
 	{
 		anim = GetComponent<Animator> ();
@@ -77,16 +82,38 @@ public class PlayerControl : MonoBehaviour
 
 	void Update()
 	{
-		// fly
-		if(Input.GetButtonDown ("Fly"))
-			fly = !fly;
-		aim = Input.GetButton("Aim");
-		h = Input.GetAxis("Horizontal");
-		v = Input.GetAxis("Vertical");
-		run = Input.GetButton ("Run");
-		sprint = Input.GetButton ("Sprint");
-		isMoving = Mathf.Abs(h) > 0.1 || Mathf.Abs(v) > 0.1;
-	}
+        if (!IsGameover) {
+            // fly
+            if (Input.GetButtonDown("Fly"))
+                fly = !fly;
+            aim = Input.GetButton("Aim");
+            h = Input.GetAxis("Horizontal");
+            v = Input.GetAxis("Vertical");
+            run = Input.GetButton("Run");
+            sprint = Input.GetButton("Sprint");
+            isMoving = Mathf.Abs(h) > 0.1 || Mathf.Abs(v) > 0.1;
+
+			// 正規のゲームオーバー処理が入ったら消す TODO:
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                OnGameover();
+            }
+
+        } else {
+            // ゲームオーバー時、キャラクターを止める
+            fly = false;
+            aim = false;
+            h = 0.0f;
+            v = 0.0f;
+            run = false;
+            sprint = false;
+            isMoving = false;
+
+            if (Input.GetKeyDown(KeyCode.R)) {
+                SceneManager.LoadScene(0);
+            }
+        }
+    }
 
 	void FixedUpdate()
 	{
@@ -123,7 +150,7 @@ public class PlayerControl : MonoBehaviour
 			if(timeToNextJump > 0)
 				timeToNextJump -= Time.deltaTime;
 		}
-		if (Input.GetButtonDown ("Jump"))
+		if (!IsGameover && Input.GetButtonDown ("Jump"))
 		{
 			anim.SetBool(jumpBool, true);
 			if(speed > 0 && timeToNextJump <= 0 && !aim)
@@ -240,10 +267,16 @@ public class PlayerControl : MonoBehaviour
         {
             CoinScript coinS = colObject.gameObject.GetComponent < CoinScript >();
 
-//            Destroy(colObject.gameObject);
             coinS.OnCollect(); // この中で Destroyをする（フェードも）
             scoreS.AddScore();
         }
+    }
+
+	// ゲームオーバー処理
+    void OnGameover()
+    {
+        GameoverText.SetActive(true);
+        IsGameover = true;
     }
 
 }
