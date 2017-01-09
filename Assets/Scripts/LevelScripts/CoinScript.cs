@@ -6,6 +6,8 @@ public class CoinScript : MonoBehaviour {
 
     public Vector3 angle;
     public AudioClip audioClip;
+    public ParticleSystem particle;
+
     AudioSource audioSource;
 
     // Use this for initialization
@@ -29,6 +31,9 @@ public class CoinScript : MonoBehaviour {
         {
             audioSource.PlayOneShot(audioClip);
         }
+
+        ParticleSystem obj = Instantiate(particle, transform.position + new Vector3(0.0f, 1f), transform.rotation);
+        Destroy(obj, obj.main.duration);
 
         Destroy(gameObject);
     }
