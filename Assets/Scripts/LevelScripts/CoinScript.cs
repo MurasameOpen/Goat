@@ -10,7 +10,6 @@ public class CoinScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        Debug.Log("testes");
         if (audioClip) {
             Debug.Log("clip");
             audioSource = gameObject.GetComponentInParent<AudioSource>();
