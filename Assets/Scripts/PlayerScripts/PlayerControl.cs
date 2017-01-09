@@ -238,7 +238,10 @@ public class PlayerControl : MonoBehaviour
     {
         if (colObject.gameObject.tag == "Coin")
         {
-            Destroy(colObject.gameObject);
+            CoinScript coinS = colObject.gameObject.GetComponent < CoinScript >();
+
+//            Destroy(colObject.gameObject);
+            coinS.OnCollect(); // この中で Destroyをする（フェードも）
             scoreS.AddScore();
         }
     }
