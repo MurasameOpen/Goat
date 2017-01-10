@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -56,6 +57,11 @@ public class PlayerControl : MonoBehaviour
     public GameObject GameoverText;
     private bool IsGameover = false;
 
+    // Timer
+    public Text timeText;
+    public float maxTime = 120.0f;
+    private float currentTime;
+
     void Awake()
 	{
 		anim = GetComponent<Animator> ();
@@ -74,6 +80,9 @@ public class PlayerControl : MonoBehaviour
 
         // CoinScore
         scoreS = scoreText.GetComponent<ScoreTextScript>();
+
+        // 残り時間
+        currentTime = maxTime;
     }
 
 	bool IsGrounded() {
@@ -92,13 +101,6 @@ public class PlayerControl : MonoBehaviour
             run = Input.GetButton("Run");
             sprint = Input.GetButton("Sprint");
             isMoving = Mathf.Abs(h) > 0.1 || Mathf.Abs(v) > 0.1;
-
-			// 正規のゲームオーバー処理が入ったら消す TODO:
-            if (Input.GetKeyDown(KeyCode.F))
-            {
-                OnGameover();
-            }
-
         } else {
             // ゲームオーバー時、キャラクターを止める
             fly = false;
@@ -112,6 +114,13 @@ public class PlayerControl : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.R)) {
                 SceneManager.LoadScene(0);
             }
+        }
+
+        UpdateTime();
+        PrintTime(currentTime);
+        if (checkTimeOut())
+        {
+            OnGameover();
         }
     }
 
@@ -279,4 +288,22 @@ public class PlayerControl : MonoBehaviour
         IsGameover = true;
     }
 
+    void PrintTime(float time)
+    {
+        timeText.text = "TIME: " + time.ToString("0");
+    }
+
+    void UpdateTime()
+    {
+        currentTime -= Time.deltaTime;
+        if (currentTime <= 0.0f)
+        {
+            currentTime = 0.0f;
+        }
+    }
+
+    bool checkTimeOut()
+    {
+        return (int)currentTime == 0;
+    }
 }
